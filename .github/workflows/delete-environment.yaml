@@ -57,3 +57,19 @@ jobs:
       - name: Terraform Destroy ECR
         working-directory: terraform/configurations/ecr
         run: terraform destroy -auto-approve
+
+      #Download Terraform State EKS from S3
+      - name: Download Terraform State EKS from S3
+        working-directory: terraform/configurations/eks
+        run: aws s3 cp s3://tfstate-viniciushemming-project-terraform-22082025/eks/terraform.tfstate ./terraform.tfstate
+
+        #Initialize terraform for EKS
+      - name: Terraform Init EKS
+        working-directory: terraform/configurations/eks
+        run: terraform init
+
+      #Definitive Creation of EKS
+      - name: Terraform Destroy EKS
+        working-directory: terraform/configurations/eks
+        run: terraform destroy -auto-approve
+
