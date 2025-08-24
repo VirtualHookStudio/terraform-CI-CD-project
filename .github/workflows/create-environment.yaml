@@ -57,3 +57,18 @@ jobs:
       - name: Upload Terraform State ECR to S3 VPC
         working-directory: terraform/configurations/ecr
         run: aws s3 cp terraform.tfstate s3://tfstate-viniciushemming-project-terraform-22082025/ecr/terraform.tfstate
+
+      #Initialize terraform for EKS
+      - name: Terraform Init EKS
+        working-directory: terraform/configurations/eks
+        run: terraform init
+
+      #Definitive Creation of EKS
+      - name: Terraform Apply EKS
+        working-directory: terraform/configurations/eks
+        run: terraform apply -auto-approve
+
+      #Upload terraform State EKS to S3 VPC
+      - name: Upload Terraform State EKS to S3 VPC
+        working-directory: terraform/configurations/eks
+        run: aws s3 cp terraform.tfstate s3://tfstate-viniciushemming-project-terraform-22082025/eks/terraform.tfstate
