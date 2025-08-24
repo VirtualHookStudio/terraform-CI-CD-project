@@ -56,17 +56,14 @@ jobs:
       - name: Delete Load Balancers from EKS if exist
         run: |
           echo "Searching Load Balancers for cluster eksprojectviniciushemming..."
-          LB_ARNS=$(aws elbv2 describe-load-balancers \
-            --query "LoadBalancers[?contains(Tags[?Key=='kubernetes.io/cluster/eksprojectviniciushemming'].Value, 'owned')].LoadBalancerArn" \
-            --output text)
-          if [ -n "$LB_ARNS" ]; then
-            for lb in $LB_ARNS; do
+          LB_ARNS=$(aws elbv2 describe-load-balancers --query "LoadBalancers[].LoadBalancerArn" --output text)
+          for lb in $LB_ARNS; do
+            TAG_VALUE=$(aws elbv2 describe-tags --resource-arns $lb --query "TagDescriptions[0].Tags[?Key=='kubernetes.io/cluster/eksprojectviniciushemming'].Value" --output text)
+            if [ "$TAG_VALUE" == "owned" ]; then
               echo "Deleting Load Balancer $lb"
               aws elbv2 delete-load-balancer --load-balancer-arn $lb
-            done
-          else
-            echo "No Load Balancers found for cluster eksprojectviniciushemming"
-          fi
+            fi
+          done
         env:
           AWS_DEFAULT_REGION: us-east-1
           AWS_REGION: us-east-1
