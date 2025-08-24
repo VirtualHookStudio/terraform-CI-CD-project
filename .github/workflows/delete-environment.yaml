@@ -53,11 +53,15 @@ jobs:
         working-directory: terraform/configurations/eks
         run: terraform destroy -auto-approve
 
-      - name: Delete Classic Load Balancers from EKS if exist
+
+      #Install jq
+      - name: Install jq
         run: |
-          # Instalar jq (se necessário)
           sudo apt-get update && sudo apt-get install -y jq
 
+      #Delete Load Balancer if exist
+      - name: Delete Classic Load Balancers from EKS if exist
+        run: |
           CLUSTER_NAME="eksprojectviniciushemming"
           LB_NAMES=$(aws elb describe-load-balancers --query "LoadBalancerDescriptions[].LoadBalancerName" --output text)
 
@@ -76,7 +80,37 @@ jobs:
           AWS_REGION: us-east-1
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      
+
+      #Delete Security Groups if exist
+      - name: Delete Security Groups from EKS if exist
+        run: |
+          CLUSTER_TAG="eksprojectviniciushemming"
+          SG_IDS=$(aws ec2 describe-security-groups \
+            --filters "Name=tag:kubernetes.io/cluster,Values=$CLUSTER_TAG" \
+            --query "SecurityGroups[].GroupId" \
+            --output text)
+
+          if [ -n "$SG_IDS" ]; then
+            for sg in $SG_IDS; do
+              INGRESS_RULES=$(aws ec2 describe-security-groups --group-ids $sg --query "SecurityGroups[0].IpPermissions" --output json)
+              EGRESS_RULES=$(aws ec2 describe-security-groups --group-ids $sg --query "SecurityGroups[0].IpPermissionsEgress" --output json)
+
+              if [ "$INGRESS_RULES" != "[]" ]; then
+                aws ec2 revoke-security-group-ingress --group-id $sg --ip-permissions "$INGRESS_RULES"
+              fi
+              if [ "$EGRESS_RULES" != "[]" ]; then
+                aws ec2 revoke-security-group-egress --group-id $sg --ip-permissions "$EGRESS_RULES"
+              fi
+              aws ec2 delete-security-group --group-id $sg
+            done
+          else
+            echo "Nenhum Security Group encontrado com tag kubernetes.io/cluster/$CLUSTER_TAG"
+          fi
+        env:
+          AWS_DEFAULT_REGION: us-east-1
+          AWS_REGION: us-east-1
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       #Initialize and Destroy Terraform ECR
       - name: Terraform Init ECR
