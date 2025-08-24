@@ -1,89 +1,69 @@
-Terraform Project for CI/CD
+🐍 Python Sample Application with Terraform & CI/CD 🚀
 
-This project aims to automate AWS infrastructure using Terraform, organized in a modular way, and deploy a Python application on an EKS cluster.
+This repository demonstrates a complete infrastructure and deployment pipeline for a simple Python application using Terraform and GitHub Actions. The project is structured into three main pillars: the Python App, Terraform configurations, and CI/CD workflows.
 
-Project Structure
+📌 Project Pillars
+1️⃣ Python Application
 
-The project is organized as follows:
+File: app.py
 
-modules/: Contains reusable modules
+Name: Python-sample-application
 
-vpc/: Module to create VPC
+🖥️ A simple frontend application for demonstration purposes.
 
-ecr/: Module to create ECR repository
+2️⃣ Terraform Infrastructure
 
-eks/: Module to create EKS cluster
+🏗️ Fully organized using configurations and modules folders for best practices.
 
-s3/: Optional S3 module (not included in the pipeline)
+Resources included:
 
-configurations/: Configurations that call the modules
+☁️ S3: Stores .tfvars files to keep the state between CI/CD executions. Must exist before running workflows.
 
-vpc.tf
+🌐 VPC: Networking layer for resources.
 
-ecr.tf
+🐳 ECR: Container image repository.
 
-eks.tf
+☸️ EKS: Kubernetes cluster for deploying the application.
 
-s3.tf (optional)
+3️⃣ CI/CD Workflows
 
-app/: Python application for deployment on EKS
+Located in .github/workflows/ with three main YAML files:
 
-main.py
+⚡ Create Environment: Sets up VPC, Subnets, Security Groups, ECR, and EKS.
 
-requirements.txt
+🧹 Delete Environment: Tears down resources in reverse order.
 
-Dockerfile
+🚀 Build & Deploy App: Builds the Python App container and deploys it to the EKS cluster.
 
-Provisioned Resources
+📂 Project Structure
+.
+├── app.py
+├── configurations/
+│   └── terraform setup files
+├── modules/
+│   └── reusable Terraform modules
+├── .github/
+│   └── workflows/
+│       ├── create-environment.yaml
+│       ├── delete-environment.yaml
+│       └── build-and-deploy.yaml
 
-Terraform will create the following AWS resources:
+🛠️ Prerequisites
 
-VPC: Virtual network for resource isolation
+Terraform installed
 
-ECR: Docker image repository
+AWS CLI configured
 
-EKS: Kubernetes cluster to run the application
+GitHub repository with proper secrets for CI/CD
 
-S3 (optional): Object storage (not included in the pipeline)
+Pre-existing S3 bucket to store .tfvars files
 
-Usage
-Prerequisites
+🔑 Environment Variables for CI/CD
 
-Terraform
+To run the workflows, configure the following GitHub Actions secrets in your repository:
 
-AWS CLI
+AWS_ACCESS_KEY_ID 🔑
 
-AWS account with permissions to create resources
+AWS_SECRET_ACCESS_KEY 🔒
 
-Initialize Terraform
-
-Navigate to the configurations folder and run Terraform initialization. Then plan and apply the infrastructure.
-
-The S3 module is optional and will not be called by the CI/CD pipeline.
-
-Deploy Python Application on EKS
-
-Navigate to the app folder, build the Docker image, push it to ECR, and update Kubernetes manifests to deploy on EKS.
-
-CI/CD Pipeline
-
-The pipeline will:
-
-Automatically apply Terraform configurations
-
-Create or update VPC, ECR, and EKS infrastructure
-
-Build and push the Docker image to ECR
-
-Deploy the Python application on EKS
-
-S3 is not included in the automated pipeline.
-
-Notes
-
-All Terraform resources are modular for easier maintenance and reuse
-
-The pipeline can be integrated with GitHub Actions or GitLab CI/CD
-
-License
-# terraform-CI-CD-project
+ID_AWS 🆔 (your AWS account ID)
