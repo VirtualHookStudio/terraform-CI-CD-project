@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  create-vpc:
+  create-environment:
     runs-on: ubuntu-latest
 
     steps:
