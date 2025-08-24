@@ -35,7 +35,7 @@ jobs:
 
       #Definitive Creation of VPC
       - name: Terraform Apply
-        working-directory: terraform/vpc
+        working-directory: terraform/configurations/vpc
         run: terraform apply -var-file="dev.tfvars"  -auto-approve
 
       #Upload terraform State to S3
