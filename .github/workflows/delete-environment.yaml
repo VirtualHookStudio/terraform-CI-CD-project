@@ -53,18 +53,22 @@ jobs:
         working-directory: terraform/configurations/eks
         run: terraform destroy -auto-approve
 
-      - name: Delete Load Balancers from EKS if exist
+      - name: Delete Classic Load Balancers from EKS if exist
         run: |
           # Instalar jq (se necessário)
           sudo apt-get update && sudo apt-get install -y jq
-          LB_ARNS=$(aws elbv2 describe-load-balancers --query "LoadBalancers[].LoadBalancerArn" --output text)
-          for lb in $LB_ARNS; do
-            TAGS=$(aws elbv2 describe-tags --resource-arns $lb --output json)
-            CLUSTER_TAG=$(echo $TAGS | jq -r '.TagDescriptions[0].Tags[] | select(.Key=="kubernetes.io/cluster/eksprojectviniciushemming") | .Value')
+
+          CLUSTER_NAME="eksprojectviniciushemming"
+          LB_NAMES=$(aws elb describe-load-balancers --query "LoadBalancerDescriptions[].LoadBalancerName" --output text)
+
+          for lb in $LB_NAMES; do
+            TAGS=$(aws elb describe-tags --load-balancer-names $lb --output json)
+            CLUSTER_TAG=$(echo $TAGS | jq -r '.TagDescriptions[0].Tags[] | select(.Key=="kubernetes.io/cluster/'"$CLUSTER_NAME"'") | .Value')
             SERVICE_TAG=$(echo $TAGS | jq -r '.TagDescriptions[0].Tags[] | select(.Key=="kubernetes.io/service-name") | .Value')
+      
             if [[ "$CLUSTER_TAG" == "owned" && "$SERVICE_TAG" == "default/python-sample-service" ]]; then
-              echo "Deletando Load Balancer $lb..."
-              aws elbv2 delete-load-balancer --load-balancer-arn $lb
+              echo "Deletando Classic Load Balancer $lb..."
+              aws elb delete-load-balancer --load-balancer-name $lb
             fi
           done
         env:
@@ -72,7 +76,7 @@ jobs:
           AWS_REGION: us-east-1
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          
+      
 
       #Initialize and Destroy Terraform ECR
       - name: Terraform Init ECR
