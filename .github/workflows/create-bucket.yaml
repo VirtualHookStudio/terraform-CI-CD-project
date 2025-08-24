@@ -15,6 +15,7 @@ jobs:
             terraform
           sparse-checkout-cone-mode: false
 
+      #Configuration AWS Credentials
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -22,6 +23,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
+      #Configuration Terraform to commands
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+       #Create bucket S3
       - name: Terraform Init
         working-directory: terraform/configurations/s3
         run: terraform init
@@ -29,4 +35,5 @@ jobs:
       - name: Terraform Apply
         working-directory: terraform/configurations/s3
         run: terraform apply -auto-approve
+
 
