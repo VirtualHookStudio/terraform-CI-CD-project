@@ -1,1 +1,12 @@
+# Terraform
+*.tfstate
+*.tfstate.backup
+.terraform/
 *.tfvars
+
+# Python
+__pycache__/
+*.pyc
+
+# Docker
+*.tar
