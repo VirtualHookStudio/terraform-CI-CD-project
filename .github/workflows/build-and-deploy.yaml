@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'Python-Sample-Application/**'
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
@@ -69,4 +70,5 @@ jobs:
         run: |
           envsubst < Python-Sample-Application/app.yaml > app_rendered.yaml
           kubectl apply -f app_rendered.yaml
+
 
