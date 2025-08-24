@@ -31,7 +31,7 @@ jobs:
       #Download Terraform State from S3
       - name: Download Terraform State from S3
         working-directory: terraform/configurations/vpc
-        run: aws s3 cp s3:tfstate-viniciushemming-project-terraform-22082025/vpc/terraform.tfstate ./terraform.tfstate
+        run: aws s3 cp s3://tfstate-viniciushemming-project-terraform-22082025/vpc/terraform.tfstate ./terraform.tfstate
 
       #Initialize terraform for VPC
       - name: Terraform Init
