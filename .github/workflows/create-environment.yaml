@@ -31,9 +31,13 @@ jobs:
       #Initialize terraform for VPC
       - name: Terraform Init
         working-directory: terraform/configurations/vpc
-        run: terraform init -var-file="dev.tfvars"
+        run: terraform init
 
       #Definitive Creation of VPC
       - name: Terraform Apply
         working-directory: terraform/vpc
-        run: terraform apply -auto-approve
+        run: terraform apply -var-file="dev.tfvars"  -auto-approve
+
+      #Upload terraform State to S3
+      - name: Upload Terraform State to S3
+        run: aws s3 cp terraform.tfstate s3://tfstate-viniciushemming-project-terraform-22082025/vpc/terraform.tfstate
