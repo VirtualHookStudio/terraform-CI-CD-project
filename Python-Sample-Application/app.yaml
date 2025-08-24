@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: python-sample-app
-        image: 960422538394.dkr.ecr.us-east-1.amazonaws.com/frontend-app-viniciushemming:latest
+        image: ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/frontend-app-viniciushemming:latest
         ports:
         - containerPort: 5000
 
