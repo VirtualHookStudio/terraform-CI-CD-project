@@ -28,17 +28,32 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
 
-      #Download Terraform State from S3
+      #Download Terraform VPC State from S3
       - name: Download Terraform State from S3
         working-directory: terraform/configurations/vpc
         run: aws s3 cp s3://tfstate-viniciushemming-project-terraform-22082025/vpc/terraform.tfstate ./terraform.tfstate
 
       #Initialize terraform for VPC
-      - name: Terraform Init
+      - name: Terraform Init VPC
         working-directory: terraform/configurations/vpc
         run: terraform init
 
       #Definitive Creation of VPC
-      - name: Terraform Destroy
+      - name: Terraform Destroy VPC
         working-directory: terraform/configurations/vpc
         run: terraform destroy -var-file="dev.tfvars" -auto-approve
+
+       #Download Terraform State ECR from S3
+      - name: Download Terraform State ECR from S3
+        working-directory: terraform/configurations/ecr
+        run: aws s3 cp s3://tfstate-viniciushemming-project-terraform-22082025/ecr/terraform.tfstate ./terraform.tfstate
+
+        #Initialize terraform for ECR
+      - name: Terraform Init ECR
+        working-directory: terraform/configurations/ecr
+        run: terraform init
+
+      #Definitive Creation of ECR
+      - name: Terraform Destroy ECR
+        working-directory: terraform/configurations/ecr
+        run: terraform destroy -auto-approve
