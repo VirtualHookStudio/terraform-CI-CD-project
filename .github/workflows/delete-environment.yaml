@@ -39,5 +39,5 @@ jobs:
 
       #Definitive Creation of VPC
       - name: Terraform Destroy
-        working-directory: terraform/vpc
+        working-directory: terraform/configurations/vpc
         run: terraform destroy -var-file="dev.tfvars" -auto-approve
