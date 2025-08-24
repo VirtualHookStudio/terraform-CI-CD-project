@@ -86,5 +86,3 @@ All Terraform resources are modular for easier maintenance and reuse
 The pipeline can be integrated with GitHub Actions or GitLab CI/CD
 
 License
-
-This project is available under the MIT license
