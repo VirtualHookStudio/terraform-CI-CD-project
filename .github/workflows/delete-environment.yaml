@@ -1,0 +1,4 @@
+name: Delete Environment
+
+on:
+  workflow_dispatch:
