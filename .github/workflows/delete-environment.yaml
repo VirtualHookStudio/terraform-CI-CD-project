@@ -55,13 +55,13 @@ jobs:
 
       - name: Delete Load Balancers from EKS if exist
         run: |
-          CLUSTER_NAME="eksprojectviniciushemming"
-          echo "Procurando Load Balancers do cluster $CLUSTER_NAME..."
+          # Instalar jq (se necessário)
+          sudo apt-get update && sudo apt-get install -y jq
           LB_ARNS=$(aws elbv2 describe-load-balancers --query "LoadBalancers[].LoadBalancerArn" --output text)
           for lb in $LB_ARNS; do
-            TAGS=$(aws elbv2 describe-tags --resource-arns $lb --query "TagDescriptions[0].Tags" --output json)
-            CLUSTER_TAG=$(echo $TAGS | jq -r '.[] | select(.Key=="kubernetes.io/cluster/'"$CLUSTER_NAME"'") | .Value')
-            SERVICE_TAG=$(echo $TAGS | jq -r '.[] | select(.Key=="kubernetes.io/service-name") | .Value')
+            TAGS=$(aws elbv2 describe-tags --resource-arns $lb --output json)
+            CLUSTER_TAG=$(echo $TAGS | jq -r '.TagDescriptions[0].Tags[] | select(.Key=="kubernetes.io/cluster/eksprojectviniciushemming") | .Value')
+            SERVICE_TAG=$(echo $TAGS | jq -r '.TagDescriptions[0].Tags[] | select(.Key=="kubernetes.io/service-name") | .Value')
             if [[ "$CLUSTER_TAG" == "owned" && "$SERVICE_TAG" == "default/python-sample-service" ]]; then
               echo "Deletando Load Balancer $lb..."
               aws elbv2 delete-load-balancer --load-balancer-arn $lb
