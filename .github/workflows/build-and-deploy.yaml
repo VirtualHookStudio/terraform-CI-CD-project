@@ -36,19 +36,19 @@ jobs:
       
       - name: Build Docker Image
         run: |
-          docker build -t python-sample-app ./Python-Sample-Application
+          docker build -t frontend-app-viniciushemming ./Python-Sample-Application
       
       - name: Tag Docker Image
         env:
           AWS_ACCOUNT_ID: ${{ secrets.ID_AWS }}
         run: |
-          docker tag python-sample-app:latest $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/python-sample-app:latest
+          docker tag frontend-app-viniciushemming:latest $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/frontend-app-viniciushemming:latest
       
       - name: Push Docker Image to ECR
         env:
           AWS_ACCOUNT_ID: ${{ secrets.ID_AWS }}
         run: |
-          docker push $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/python-sample-app:latest
+          docker push $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/frontend-app-viniciushemming:latest
       
 
       #Install kubectl last update
@@ -65,4 +65,5 @@ jobs:
 
       - name: Deploy to EKS
         run: |
+
           kubectl apply -f Python-Sample-Application/app.yaml
