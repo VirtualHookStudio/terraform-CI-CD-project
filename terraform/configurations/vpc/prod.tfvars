@@ -1,1 +1,1 @@
-availability_zone = ["us-east-1a", "us-east-1b"]
+availability_zone = ["us-west-1a", "us-west-1b"]
