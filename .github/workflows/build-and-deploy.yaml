@@ -62,8 +62,11 @@ jobs:
       - name: Update kubeconfig for EKS
         run: |
           aws eks update-kubeconfig --name eksprojectviniciushemming --region us-east-1
-
-      - name: Deploy to EKS
+      
+      - name: Set and Deploy kubectl EKS Image
+        env:
+          AWS_ACCOUNT_ID: ${{ secrets.ID_AWS }}
         run: |
+          envsubst < Python-Sample-Application/app.yaml > app_rendered.yaml
+          kubectl apply -f app_rendered.yaml
 
-          kubectl apply -f Python-Sample-Application/app.yaml
