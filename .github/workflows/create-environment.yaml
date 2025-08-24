@@ -38,8 +38,8 @@ jobs:
         working-directory: terraform/configurations/vpc
         run: terraform apply -var-file="dev.tfvars"  -auto-approve
 
-      #Upload terraform VPC State to S3 VPC
-      - name: Upload Terraform State to S3 VPC
+      #Upload terraform VPC State VPC to S3
+      - name: Upload Terraform State VPC to S3
         working-directory: terraform/configurations/vpc
         run: aws s3 cp terraform.tfstate s3://tfstate-viniciushemming-project-terraform-22082025/vpc/terraform.tfstate
 
@@ -53,7 +53,7 @@ jobs:
         working-directory: terraform/configurations/ecr
         run: terraform apply -auto-approve
 
-      #Upload terraform ECR State to S3 VPC
-      - name: Upload Terraform State to S3 VPC
+      #Upload terraform State ECR to S3 VPC
+      - name: Upload Terraform State ECR to S3 VPC
         working-directory: terraform/configurations/ecr
         run: aws s3 cp terraform.tfstate s3://tfstate-viniciushemming-project-terraform-22082025/ecr/terraform.tfstate
