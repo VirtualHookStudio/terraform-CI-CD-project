@@ -40,4 +40,5 @@ jobs:
 
       #Upload terraform State to S3
       - name: Upload Terraform State to S3
+        working-directory: terraform/configurations/vpc
         run: aws s3 cp terraform.tfstate s3://tfstate-viniciushemming-project-terraform-22082025/vpc/terraform.tfstate
