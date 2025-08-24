@@ -29,11 +29,22 @@ jobs:
         uses: hashicorp/setup-terraform@v2
 
 
-      #Download, Initialize and Destroy Terraform State EKS from S3
+      #Download all packages from S3
       - name: Download Terraform State EKS from S3
         working-directory: terraform/configurations/eks
         run: aws s3 cp s3://tfstate-viniciushemming-project-terraform-22082025/eks/terraform.tfstate ./terraform.tfstate
-      
+
+      - name: Download Terraform State ECR from S3
+        working-directory: terraform/configurations/ecr
+        run: aws s3 cp s3://tfstate-viniciushemming-project-terraform-22082025/ecr/terraform.tfstate ./terraform.tfstate
+
+      - name: Download Terraform State from S3
+        working-directory: terraform/configurations/vpc
+        run: aws s3 cp s3://tfstate-viniciushemming-project-terraform-22082025/vpc/terraform.tfstate ./terraform.tfstate
+
+        
+   
+      #Initialize and Destroy Terraform EKS
       - name: Terraform Init EKS
         working-directory: terraform/configurations/eks
         run: terraform init
@@ -63,11 +74,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 
-      #Download, Initialize and Destroy Terraform State ECR from S3
-      - name: Download Terraform State ECR from S3
-        working-directory: terraform/configurations/ecr
-        run: aws s3 cp s3://tfstate-viniciushemming-project-terraform-22082025/ecr/terraform.tfstate ./terraform.tfstate
-
+      #Initialize and Destroy Terraform ECR
       - name: Terraform Init ECR
         working-directory: terraform/configurations/ecr
         run: terraform init
@@ -77,11 +84,7 @@ jobs:
         run: terraform destroy -auto-approve
 
 
-      #Download, Initialize and Destroy Terraform VPC State from S3
-      - name: Download Terraform State from S3
-        working-directory: terraform/configurations/vpc
-        run: aws s3 cp s3://tfstate-viniciushemming-project-terraform-22082025/vpc/terraform.tfstate ./terraform.tfstate
-
+      #Initialize and Destroy Terraform VPC
       - name: Terraform Init VPC
         working-directory: terraform/configurations/vpc
         run: terraform init
