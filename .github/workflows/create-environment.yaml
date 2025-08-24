@@ -28,47 +28,44 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
 
-      #Initialize terraform for VPC
+
+      #Initialize, Definitive and Upload terraform for VPC
       - name: Terraform Init VPC
         working-directory: terraform/configurations/vpc
         run: terraform init
-
-      #Definitive Creation of VPC
+        
       - name: Terraform Apply VPC
         working-directory: terraform/configurations/vpc
         run: terraform apply -var-file="dev.tfvars"  -auto-approve
 
-      #Upload terraform VPC State VPC to S3
       - name: Upload Terraform State VPC to S3
         working-directory: terraform/configurations/vpc
         run: aws s3 cp terraform.tfstate s3://tfstate-viniciushemming-project-terraform-22082025/vpc/terraform.tfstate
 
-      #Initialize terraform for ECR
+
+      #Initialize, Definitive and Upload terraform for ECR
       - name: Terraform Init ECR
         working-directory: terraform/configurations/ecr
         run: terraform init
 
-      #Definitive Creation of ECR
       - name: Terraform Apply ECR
         working-directory: terraform/configurations/ecr
         run: terraform apply -auto-approve
 
-      #Upload terraform State ECR to S3 VPC
       - name: Upload Terraform State ECR to S3 VPC
         working-directory: terraform/configurations/ecr
         run: aws s3 cp terraform.tfstate s3://tfstate-viniciushemming-project-terraform-22082025/ecr/terraform.tfstate
 
-      #Initialize terraform for EKS
+
+      #Initialize, Definitive and Upload terraform for EKS
       - name: Terraform Init EKS
         working-directory: terraform/configurations/eks
         run: terraform init
 
-      #Definitive Creation of EKS
       - name: Terraform Apply EKS
         working-directory: terraform/configurations/eks
         run: terraform apply -auto-approve
 
-      #Upload terraform State EKS to S3 VPC
       - name: Upload Terraform State EKS to S3 VPC
         working-directory: terraform/configurations/eks
         run: aws s3 cp terraform.tfstate s3://tfstate-viniciushemming-project-terraform-22082025/eks/terraform.tfstate
