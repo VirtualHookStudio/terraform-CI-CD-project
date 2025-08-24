@@ -86,12 +86,14 @@ jobs:
         run: |
           CLUSTER_TAG="eksprojectviniciushemming"
           SG_IDS=$(aws ec2 describe-security-groups \
-            --filters "Name=tag:kubernetes.io/cluster/eksprojectviniciushemming,Values=owned" \
+            --filters "Name=tag:kubernetes.io/cluster/$CLUSTER_TAG,Values=owned" \
             --query "SecurityGroups[].GroupId" \
             --output text)
 
           if [ -n "$SG_IDS" ]; then
             for sg in $SG_IDS; do
+              echo "Processando Security Group: $sg"
+
               INGRESS_RULES=$(aws ec2 describe-security-groups --group-ids $sg --query "SecurityGroups[0].IpPermissions" --output json)
               EGRESS_RULES=$(aws ec2 describe-security-groups --group-ids $sg --query "SecurityGroups[0].IpPermissionsEgress" --output json)
 
@@ -101,7 +103,19 @@ jobs:
               if [ "$EGRESS_RULES" != "[]" ]; then
                 aws ec2 revoke-security-group-egress --group-id $sg --ip-permissions "$EGRESS_RULES"
               fi
-              aws ec2 delete-security-group --group-id $sg
+
+              # Retry loop para deletar o SG
+              MAX_RETRIES=5
+              SLEEP_INTERVAL=10
+              for i in $(seq 1 $MAX_RETRIES); do
+                if aws ec2 delete-security-group --group-id $sg; then
+                  echo "✅ Security Group $sg deletado com sucesso."
+                  break
+                else
+                  echo "❌ Tentativa $i falhou ao deletar $sg. Aguardando $SLEEP_INTERVAL segundos..."
+                  sleep $SLEEP_INTERVAL
+                fi
+              done
             done
           else
             echo "Nenhum Security Group encontrado com tag kubernetes.io/cluster/$CLUSTER_TAG"
@@ -111,6 +125,7 @@ jobs:
           AWS_REGION: us-east-1
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
 
       #Initialize and Destroy Terraform ECR
       - name: Terraform Init ECR
