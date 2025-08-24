@@ -55,9 +55,10 @@ jobs:
       #Install kubectl last update
       - name: Install kubectl
         run: |
-          curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.29.0/2024-06-14/bin/linux/amd64/kubectl
-          chmod +x ./kubectl
-          sudo mv ./kubectl /usr/local/bin/
+          sudo apt-get update -y
+          sudo apt-get install -y kubectl
+
+      
       
       #Update kubeconfig for EKS
       - name: Update kubeconfig for EKS
@@ -70,5 +71,6 @@ jobs:
         run: |
           envsubst < Python-Sample-Application/app.yaml > app_rendered.yaml
           kubectl apply -f app_rendered.yaml
+
 
 
