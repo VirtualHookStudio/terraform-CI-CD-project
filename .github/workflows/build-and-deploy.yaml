@@ -3,7 +3,7 @@ name: Build and Deploy App
 on:
   push:
     paths:
-      - 'Python-Sample-Application/**'
+      - 'react-basic-app/**'
   workflow_dispatch:
 
 jobs:
@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           sparse-checkout: |
-            Python-Sample-Application
+            react-basic-app
           sparse-checkout-cone-mode: true
 
       #Configuration AWS Credentials
@@ -37,7 +37,7 @@ jobs:
       
       - name: Build Docker Image
         run: |
-          docker build -t frontend-app-viniciushemming ./Python-Sample-Application
+          docker build -t frontend-app-viniciushemming ./react-basic-app
       
       - name: Tag Docker Image
         env:
@@ -69,8 +69,9 @@ jobs:
         env:
           AWS_ACCOUNT_ID: ${{ secrets.ID_AWS }}
         run: |
-          envsubst < Python-Sample-Application/app.yaml > app_rendered.yaml
+          envsubst < react-basic-app/app.yaml > app_rendered.yaml
           kubectl apply -f app_rendered.yaml
+
 
 
 
