@@ -71,7 +71,6 @@ jobs:
             SERVICE_TAG=$(echo $TAGS | jq -r '.TagDescriptions[0].Tags[] | select(.Key=="kubernetes.io/service-name") | .Value')
       
             if [[ "$CLUSTER_TAG" == "owned" && "$SERVICE_TAG" == "default/react-basic-service" ]]; then
-              echo "Deletando Classic Load Balancer $lb..."
               aws elb delete-load-balancer --load-balancer-name $lb
             fi
           done
@@ -81,11 +80,11 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
+      #Delete Security Groups created by EKS
       - name: Delete EKS Security Groups and Associated ENIs
         run: |
           CLUSTER_TAG="eksprojectviniciushemming"
-      
-          # Lista todos os SGs com a tag do cluster
+          
           SG_IDS=$(aws ec2 describe-security-groups \
             --filters "Name=tag:kubernetes.io/cluster/$CLUSTER_TAG,Values=owned" \
             --query "SecurityGroups[].GroupId" \
@@ -93,9 +92,7 @@ jobs:
       
           if [ -n "$SG_IDS" ]; then
             for sg in $SG_IDS; do
-              echo "🔍 Processando Security Group: $sg"
-      
-              # Lista ENIs associadas
+            
               ENI_IDS=$(aws ec2 describe-network-interfaces \
                 --filters "Name=group-id,Values=$sg" \
                 --query "NetworkInterfaces[].NetworkInterfaceId" \
@@ -103,15 +100,10 @@ jobs:
       
               if [ -n "$ENI_IDS" ]; then
                 for eni in $ENI_IDS; do
-                  echo "🗑 Deletando ENI: $eni"
                   aws ec2 delete-network-interface --network-interface-id $eni || echo "Falha ao deletar ENI $eni, pode já ter sido removida"
                 done
-              else
-                echo "Nenhuma ENI associada ao SG $sg"
-              fi
-              echo "Aguardando 15 segundos para garantir que todas as ENIs sejam liberadas..."
+              echo "This sleep was used to ensure the network interface has no bound with the Security Group, feel free to experiment without it."
               sleep 15
-              # Revoga ingress/egress rules
               INGRESS_RULES=$(aws ec2 describe-security-groups --group-ids $sg --query "SecurityGroups[0].IpPermissions" --output json)
               EGRESS_RULES=$(aws ec2 describe-security-groups --group-ids $sg --query "SecurityGroups[0].IpPermissionsEgress" --output json)
       
@@ -121,13 +113,8 @@ jobs:
               if [ "$EGRESS_RULES" != "[]" ]; then
                 aws ec2 revoke-security-group-egress --group-id $sg --ip-permissions "$EGRESS_RULES" || true
               fi
-      
-              # Deleta o SG apenas uma vez
-              aws ec2 delete-security-group --group-id $sg || echo "❌ Não foi possível deletar SG $sg, possivelmente ainda há dependências"
+              aws ec2 delete-security-group --group-id $sg || echo "It was not possible delete security-group!"
             done
-          else
-            echo "Nenhum Security Group encontrado com tag $CLUSTER_TAG"
-          fi
         env:
           AWS_DEFAULT_REGION: us-east-1
           AWS_REGION: us-east-1
