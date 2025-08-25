@@ -70,7 +70,7 @@ jobs:
             CLUSTER_TAG=$(echo $TAGS | jq -r '.TagDescriptions[0].Tags[] | select(.Key=="kubernetes.io/cluster/'"$CLUSTER_NAME"'") | .Value')
             SERVICE_TAG=$(echo $TAGS | jq -r '.TagDescriptions[0].Tags[] | select(.Key=="kubernetes.io/service-name") | .Value')
       
-            if [[ "$CLUSTER_TAG" == "owned" && "$SERVICE_TAG" == "default/python-sample-service" ]]; then
+            if [[ "$CLUSTER_TAG" == "owned" && "$SERVICE_TAG" == "default/react-basic-service" ]]; then
               echo "Deletando Classic Load Balancer $lb..."
               aws elb delete-load-balancer --load-balancer-name $lb
             fi
