@@ -70,6 +70,7 @@ jobs:
           AWS_ACCOUNT_ID: ${{ secrets.ID_AWS }}
         run: |
           envsubst < react-basic-app/app.yaml > app_rendered.yaml
+          DEPLOYMENT_NAME="react-basic-app"
           # Verifica se o deployment já existe
           if kubectl get deployment "$DEPLOYMENT_NAME" >/dev/null 2>&1; then
             echo "Deployment $DEPLOYMENT_NAME já existe, forçando rollout..."
@@ -78,6 +79,7 @@ jobs:
             echo "Deployment $DEPLOYMENT_NAME não existe, aplicando manifest..."
             kubectl apply -f app_rendered.yaml
           fi
+
 
 
 
