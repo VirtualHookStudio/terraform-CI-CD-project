@@ -1,13 +1,13 @@
-🐍 Python Sample Application with Terraform & CI/CD 🚀
+⚛️ React Sample Application with Terraform & CI/CD 🚀
 
-This repository demonstrates a complete infrastructure and deployment pipeline for a simple Python application using Terraform and GitHub Actions. The project is structured into three main pillars: the Python App, Terraform configurations, and CI/CD workflows.
+This repository demonstrates a complete infrastructure and deployment pipeline for a simple React application using Terraform and GitHub Actions. The project is structured into three main pillars: the React App, Terraform configurations, and CI/CD workflows.
 
 📌 Project Pillars
-1️⃣ Python Application
+1️⃣ React Application
 
-File: app.py
+File: app.js (or main entry in react-basic-app)
 
-Name: Python-sample-application
+Name: react-basic-app
 
 🖥️ A simple frontend application for demonstration purposes.
 
@@ -33,15 +33,13 @@ Located in .github/workflows/ with three main YAML files:
 
 🧹 Delete Environment: Tears down resources in reverse order.
 
-🚀 Build & Deploy App: Builds the Python App container and deploys it to the EKS cluster.
+🚀 Build & Deploy App: Builds the React app container and deploys it to the EKS cluster.
 
 📂 Project Structure
 .
-├── app.py
-├── configurations/
-│   └── terraform setup files
-├── modules/
-│   └── reusable Terraform modules
+├── react-basic-app/          # React frontend application
+├── configurations/           # Terraform setup files
+├── modules/                  # Reusable Terraform modules
 ├── .github/
 │   └── workflows/
 │       ├── create-environment.yaml
@@ -67,4 +65,3 @@ AWS_ACCESS_KEY_ID 🔑
 AWS_SECRET_ACCESS_KEY 🔒
 
 ID_AWS 🆔 (your AWS account ID)
-# terraform-CI-CD-project
